@@ -13,7 +13,8 @@ public partial class ProgressRingHandler : ViewHandler<ProgressRing, WinUIProgre
         {
             [nameof(ProgressRing.IsIndeterminate)] = MapIsIndeterminate,
             [nameof(ProgressRing.Progress)] = MapProgress,
-            [nameof(ProgressRing.ProgressColor)] = MapProgressColor
+            [nameof(ProgressRing.ProgressColor)] = MapProgressColor,
+            [nameof(ProgressRing.TrackColor)] = MapTrackColor
         };
 
     public static CommandMapper<ProgressRing, ProgressRingHandler> CommandMapper = new(ViewHandler.ViewCommandMapper) { };
@@ -55,6 +56,7 @@ public partial class ProgressRingHandler : ViewHandler<ProgressRing, WinUIProgre
             PlatformView.Value = VirtualView.Progress * 100;
 
         UpdateProgressColor();
+        UpdateTrackColor();
     }
 
     void UpdateProgressColor()
@@ -65,9 +67,19 @@ public partial class ProgressRingHandler : ViewHandler<ProgressRing, WinUIProgre
         PlatformView.Foreground = brush;
     }
 
+    void UpdateTrackColor()
+    {
+        if (VirtualView?.TrackColor is null) return;
+
+        var brush = new Microsoft.UI.Xaml.Media.SolidColorBrush(VirtualView.TrackColor.ToWindowsColor());
+        PlatformView.Background = brush;
+    }
+
     public static void MapIsIndeterminate(ProgressRingHandler handler, ProgressRing view) => handler?.UpdateAll();
 
     public static void MapProgress(ProgressRingHandler handler, ProgressRing view) => handler?.UpdateAll();
 
     public static void MapProgressColor(ProgressRingHandler handler, ProgressRing view) => handler?.UpdateAll();
+
+    public static void MapTrackColor(ProgressRingHandler handler, ProgressRing view) => handler?.UpdateAll();
 }

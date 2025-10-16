@@ -2,6 +2,48 @@
 <ContentPage
     x:Class="Maui.ProgressRing.Sample.MainPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
-    <Label Text="Hello world" />
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:mhr="clr-namespace:Maui.ProgressRing;assembly=Maui.ProgressRing"
+    Title="MAUI ProgressRing">
+    <StackLayout
+        Padding="0,20"
+        HorizontalOptions="CenterAndExpand"
+        Spacing="40">
+        <StackLayout Spacing="12">
+            <Label HorizontalOptions="Center" Text="Determinate ProgressRing" />
+
+            <mhr:ProgressRing
+                x:Name="DeterminateRing"
+                HeightRequest="85"
+                IsIndeterminate="False"
+                Progress="0.6"
+                ProgressColor="{AppThemeBinding Light={StaticResource Primary},
+                                                Dark={StaticResource White}}"
+                StrokeThickness="6"
+                TrackColor="{AppThemeBinding Light={StaticResource Gray200},
+                                             Dark={StaticResource Gray600}}"
+                WidthRequest="85" />
+
+            <Slider
+                x:Name="ProgressSlider"
+                Maximum="1"
+                Minimum="0"
+                ValueChanged="ProgressSlider_ValueChanged"
+                Value="0.6" />
+        </StackLayout>
+
+        <StackLayout Spacing="12">
+            <Label HorizontalOptions="Center" Text="Indeterminate ProgressRing" />
+
+            <mhr:ProgressRing
+                HeightRequest="85"
+                IsIndeterminate="True"
+                ProgressColor="{AppThemeBinding Light={StaticResource Primary},
+                                                Dark={StaticResource White}}"
+                StrokeThickness="6"
+                TrackColor="{AppThemeBinding Light={StaticResource Gray200},
+                                             Dark={StaticResource Gray600}}"
+                WidthRequest="85" />
+        </StackLayout>
+    </StackLayout>
 </ContentPage>

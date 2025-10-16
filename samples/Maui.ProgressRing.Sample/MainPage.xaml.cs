@@ -6,4 +6,10 @@ public partial class MainPage : ContentPage
 	{
 		InitializeComponent();
 	}
+
+	private void ProgressSlider_ValueChanged(object sender, ValueChangedEventArgs e)
+	{
+		if (DeterminateRing is null) return;
+		DeterminateRing.Progress = e.NewValue;
+	}
 }

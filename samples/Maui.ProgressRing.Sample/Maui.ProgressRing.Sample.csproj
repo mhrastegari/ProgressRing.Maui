@@ -45,4 +45,8 @@
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.10" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\src\Maui.ProgressRing\Maui.ProgressRing.csproj" />
+	</ItemGroup>
 </Project>

@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Restore Workloads
+        run: dotnet workload restore ./Maui.ProgressRing.sln
+
+      - name: Restore Dependencies
+        run: dotnet restore ./Maui.ProgressRing.sln
+
+      - name: Build Library
+        run: dotnet build ./src/Maui.ProgressRing/Maui.ProgressRing.csproj
+
+      - name: Build Sample App
+        run: dotnet build ./samples/Maui.ProgressRing.Sample/Maui.ProgressRing.Sample.csproj

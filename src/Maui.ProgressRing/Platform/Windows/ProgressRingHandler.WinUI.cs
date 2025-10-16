@@ -2,7 +2,7 @@ using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 using WinUIProgressRingView = Microsoft.UI.Xaml.Controls.ProgressRing;
 
-namespace Maui.ProgressRing.Platforms.Windows;
+namespace Maui.ProgressRing.Platform.Windows;
 
 public partial class ProgressRingHandler : ViewHandler<ProgressRing, WinUIProgressRingView>
 {

@@ -1,5 +1,3 @@
-namespace Maui.ProgressRing;
-
 public static class MauiAppBuilderExtensions
 {
 	public static MauiAppBuilder UseProgressRing(this MauiAppBuilder builder)
@@ -7,11 +5,15 @@ public static class MauiAppBuilderExtensions
 		builder.ConfigureMauiHandlers(handlers =>
 		{
 #if ANDROID
-			handlers.AddHandler<ProgressRing, Platforms.Android.ProgressRingHandler>();
-#elif IOS || MACCATALYST
-            handlers.AddHandler<ProgressRing, Platforms.MaciOS.ProgressRingHandler>();
-#elif WINDOWS
-            handlers.AddHandler<ProgressRing, Platforms.Windows.ProgressRingHandler>();
+    		handlers.AddHandler<Maui.ProgressRing.ProgressRing, Maui.ProgressRing.Platform.Android.ProgressRingHandler>();
+#endif
+
+#if IOS || MACCATALYST
+			handlers.AddHandler<Maui.ProgressRing.ProgressRing, Maui.ProgressRing.Platform.MaciOS.ProgressRingHandler>();
+#endif
+
+#if WINDOWS
+    		handlers.AddHandler<Maui.ProgressRing.ProgressRing, Maui.ProgressRing.Platform.Windows.ProgressRingHandler>();
 #endif
 		});
 

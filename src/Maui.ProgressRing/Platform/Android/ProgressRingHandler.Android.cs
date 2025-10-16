@@ -4,14 +4,14 @@ using Google.Android.Material.ProgressIndicator;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 
-namespace Maui.ProgressRing.Platforms.Android;
+namespace Maui.ProgressRing.Platform.Android;
 
 public partial class ProgressRingHandler : ViewHandler<ProgressRing, FrameLayout>
 {
     const double DefaultSize = 48.0;
     const double DefaultStroke = 4.0;
 
-    CircularProgressIndicator _indicator;
+    CircularProgressIndicator? _indicator;
 
     public ProgressRingHandler() : base(Mapper, CommandMapper) { }
 
@@ -96,7 +96,7 @@ public partial class ProgressRingHandler : ViewHandler<ProgressRing, FrameLayout
 
     static float DpToPixels(double dp)
     {
-        var metrics = Platform.CurrentActivity?.Resources?.DisplayMetrics;
+        var metrics = Microsoft.Maui.ApplicationModel.Platform.CurrentActivity?.Resources?.DisplayMetrics;
         return metrics == null ? (float)dp : (float)(dp * metrics.Density);
     }
 

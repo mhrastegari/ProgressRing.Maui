@@ -1,4 +1,4 @@
-# Maui.ProgressRing
+# ProgressRing.Maui
 
 A cross-platform native .NET MAUI ProgressRing (Circular Progress) control for Android, iOS, macOS, and Windows.\
 Supports determinate and indeterminate modes with customizable colors and stroke thickness.
@@ -10,14 +10,13 @@ Supports determinate and indeterminate modes with customizable colors and stroke
 - ✅ Adjustable stroke thickness
 - ✅ Consistent native appearance across all platforms
 
-<!--
 ## 📦 Installation
 
 Install via NuGet:
 
 ```bash
-dotnet add package Maui.ProgressRing
-``` -->
+dotnet add package ProgressRing.Maui
+```
 
 ## ⚙️ Setup
 
@@ -44,7 +43,6 @@ In your XAML page:
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:mhr="http://mhrastegari.com/progressring"
              x:Class="MyMauiApp.MainPage">
-
     <StackLayout Spacing="24" Padding="24">
         <!-- Determinate ProgressRing -->
         <mhr:ProgressRing Progress="0.6"
@@ -67,7 +65,7 @@ In your XAML page:
 Or in code-behind:
 
 ```csharp
-using Maui.ProgressRing;
+using ProgressRing.Maui;
 
 var ring = new ProgressRing
 {

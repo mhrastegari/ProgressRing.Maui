@@ -20,13 +20,13 @@ jobs:
           dotnet-version: 9.0.x
 
       - name: Restore Workloads
-        run: dotnet workload restore ./Maui.ProgressRing.sln
+        run: dotnet workload restore ./ProgressRing.Maui.sln
 
       - name: Restore Dependencies
-        run: dotnet restore ./Maui.ProgressRing.sln
+        run: dotnet restore ./ProgressRing.Maui.sln
 
       - name: Build Library
-        run: dotnet build ./src/Maui.ProgressRing/Maui.ProgressRing.csproj
+        run: dotnet build ./src/ProgressRing.Maui/ProgressRing.Maui.csproj
 
       - name: Build Sample App
-        run: dotnet build ./samples/Maui.ProgressRing.Sample/Maui.ProgressRing.Sample.csproj
+        run: dotnet build ./samples/ProgressRing.Maui.Sample/ProgressRing.Maui.Sample.csproj

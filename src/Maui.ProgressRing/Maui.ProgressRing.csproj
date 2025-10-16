@@ -19,12 +19,16 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 
+    	<Version>1.0.0</Version>
 		<Company>MHRastegari</Company>
 		<PackageId>Maui.ProgressRing</PackageId>
+		<Owners>Mohammad Hossein Rastegarinia</Owners>
 		<Authors>Mohammad Hossein Rastegarinia</Authors>
-		<PackageTags>MAUI;ProgressRing;UI;Controls</PackageTags>
+        <Copyright>Copyright 2025 MHRastegari</Copyright>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageTags>MAUI;ProgressRing;UI;Controls;Xaml</PackageTags>
 		<RepositoryUrl>https://github.com/mhrastegari/Maui.ProgressRing</RepositoryUrl>
-		<Description>A cross-platform .NET MAUI native ProgressRing control.</Description>
+		<Description>A cross-platform native .NET MAUI ProgressRing (Circular Progress) control for Android, iOS, macOS, and Windows.</Description>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	</PropertyGroup>
 

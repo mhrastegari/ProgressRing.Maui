@@ -31,12 +31,11 @@
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	</PropertyGroup>
 
-    <ItemGroup Condition="$(TargetFramework.StartsWith('net8.0'))">
-        <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.7" />
-        <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.7" />
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
     </ItemGroup>
 
-    <ItemGroup Condition="$(TargetFramework.StartsWith('net9.0'))">
-        <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.21" />
+    <ItemGroup Condition="$(TargetFramework.StartsWith('net8.0'))">
+        <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.100" />
     </ItemGroup>
 </Project>

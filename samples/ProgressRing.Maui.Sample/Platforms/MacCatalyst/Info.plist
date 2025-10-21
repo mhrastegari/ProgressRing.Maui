@@ -13,7 +13,12 @@
     <!-- <string>public.app-category.YOUR-CATEGORY-HERE</string> -->
 	<key>UIDeviceFamily</key>
 	<array>
+		<!-- Targets iPhone -->
+		<integer>1</integer>
+		<!-- Targets iPad -->
 		<integer>2</integer>
+		<!-- Targets macOS -->
+		<integer>6</integer>
 	</array>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>

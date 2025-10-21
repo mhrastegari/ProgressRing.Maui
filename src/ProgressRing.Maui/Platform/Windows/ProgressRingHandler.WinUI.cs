@@ -1,85 +1,92 @@
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
-using WinUIProgressRingView = Microsoft.UI.Xaml.Controls.ProgressRing;
+using WinUIProgressRing = Microsoft.UI.Xaml.Controls.ProgressRing;
+using WinUIViewbox = Microsoft.UI.Xaml.Controls.Viewbox;
 
 namespace ProgressRing.Maui.Platform.Windows;
 
-public partial class ProgressRingHandler : ViewHandler<ProgressRing, WinUIProgressRingView>
+public partial class ProgressRingHandler : ViewHandler<ProgressRing, WinUIViewbox>
 {
+    private WinUIProgressRing? _progressRing;
+
     public ProgressRingHandler() : base(Mapper, CommandMapper) { }
 
     public static IPropertyMapper<ProgressRing, ProgressRingHandler> Mapper =
         new PropertyMapper<ProgressRing, ProgressRingHandler>(ViewHandler.ViewMapper)
         {
             [nameof(ProgressRing.IsIndeterminate)] = MapIsIndeterminate,
-            [nameof(ProgressRing.Progress)] = MapProgress,
             [nameof(ProgressRing.ProgressColor)] = MapProgressColor,
-            [nameof(ProgressRing.TrackColor)] = MapTrackColor
+            [nameof(ProgressRing.TrackColor)] = MapTrackColor,
+            [nameof(ProgressRing.HeightRequest)] = MapSize,
+            [nameof(ProgressRing.WidthRequest)] = MapSize,
+            [nameof(ProgressRing.Progress)] = MapProgress,
         };
 
     public static CommandMapper<ProgressRing, ProgressRingHandler> CommandMapper = new(ViewHandler.ViewCommandMapper) { };
 
-    protected override WinUIProgressRingView CreatePlatformView()
+    protected override WinUIViewbox CreatePlatformView()
     {
-        var pr = new WinUIProgressRingView();
-
-        var width = VirtualView?.WidthRequest > 0 ? VirtualView.WidthRequest : 40;
-        var height = VirtualView?.HeightRequest > 0 ? VirtualView.HeightRequest : 40;
-
-        pr.Width = width;
-        pr.Height = height;
-
-        pr.IsActive = true;
-        return pr;
+        return new WinUIViewbox
+        {
+            Child = _progressRing = new WinUIProgressRing
+            {
+                IsActive = true,
+            }
+        };
     }
 
-    protected override void ConnectHandler(WinUIProgressRingView platformView)
+    protected override void ConnectHandler(WinUIViewbox platformView)
     {
         base.ConnectHandler(platformView);
-        UpdateAll();
     }
 
-    void UpdateAll()
+    protected override void DisconnectHandler(WinUIViewbox platformView)
     {
-        if (VirtualView == null || PlatformView == null) return;
-
-        var width = VirtualView.WidthRequest > 0 ? VirtualView.WidthRequest : 40;
-        var height = VirtualView.HeightRequest > 0 ? VirtualView.HeightRequest : 40;
-
-        PlatformView.Width = width;
-        PlatformView.Height = height;
-
-        PlatformView.IsActive = true;
-        PlatformView.IsIndeterminate = VirtualView.IsIndeterminate;
-
-        if (!VirtualView.IsIndeterminate)
-            PlatformView.Value = VirtualView.Progress * 100;
-
-        UpdateProgressColor();
-        UpdateTrackColor();
+        base.DisconnectHandler(platformView);
+        _progressRing = null;
     }
 
-    void UpdateProgressColor()
+    public static void MapIsIndeterminate(ProgressRingHandler handler, ProgressRing view)
     {
-        if (VirtualView?.ProgressColor is null) return;
-
-        var brush = new Microsoft.UI.Xaml.Media.SolidColorBrush(VirtualView.ProgressColor.ToWindowsColor());
-        PlatformView.Foreground = brush;
+        if (handler?._progressRing is null || view is null) return;
+        handler._progressRing.IsIndeterminate = view.IsIndeterminate;
     }
 
-    void UpdateTrackColor()
+    public static void MapProgressColor(ProgressRingHandler handler, ProgressRing view)
     {
-        if (VirtualView?.TrackColor is null) return;
-
-        var brush = new Microsoft.UI.Xaml.Media.SolidColorBrush(VirtualView.TrackColor.ToWindowsColor());
-        PlatformView.Background = brush;
+        if (handler?._progressRing is null || view.ProgressColor is null) return;
+        handler._progressRing.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(view.ProgressColor.ToWindowsColor());
     }
 
-    public static void MapIsIndeterminate(ProgressRingHandler handler, ProgressRing view) => handler?.UpdateAll();
+    public static void MapTrackColor(ProgressRingHandler handler, ProgressRing view)
+    {
+        if (handler?._progressRing is null || view.TrackColor is null) return;
+        handler._progressRing.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(view.TrackColor.ToWindowsColor());
+    }
 
-    public static void MapProgress(ProgressRingHandler handler, ProgressRing view) => handler?.UpdateAll();
+    public static void MapProgress(ProgressRingHandler handler, ProgressRing view)
+    {
+        if (handler?._progressRing is null || view is null) return;
+        handler._progressRing.Value = view.Progress * 100;
+    }
 
-    public static void MapProgressColor(ProgressRingHandler handler, ProgressRing view) => handler?.UpdateAll();
+    public static void MapSize(ProgressRingHandler handler, ProgressRing view)
+    {
+        if (handler?._progressRing is null || view is null) return;
 
-    public static void MapTrackColor(ProgressRingHandler handler, ProgressRing view) => handler?.UpdateAll();
+        var width = view.WidthRequest;
+        var height = view.HeightRequest;
+
+        if (width > 0 || height > 0)
+        {
+            var size = Math.Max(width, height);
+            handler._progressRing.Width = size;
+            handler._progressRing.Height = size;
+        }
+        else
+        {
+            handler._progressRing.ClearValue(Microsoft.UI.Xaml.FrameworkElement.WidthProperty);
+            handler._progressRing.ClearValue(Microsoft.UI.Xaml.FrameworkElement.HeightProperty);
+        }
+    }
 }

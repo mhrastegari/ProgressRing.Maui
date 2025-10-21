@@ -4,6 +4,18 @@ namespace ProgressRing.Maui;
 /// Represents a cross-platform native progress ring for .NET MAUI.
 /// Supports both determinate and indeterminate modes with customizable
 /// stroke thickness and colors.
+/// <para>
+/// <code>
+/// &lt;mhr:ProgressRing
+///      Progress="0.75"
+///      WidthRequest="40"
+///      HeightRequest="40"
+///      StrokeThickness="4"
+///      IsIndeterminate="False"
+///      ProgressColor="DodgerBlue"
+///      TrackColor="#C8C8C8" /&gt;
+/// </code>
+/// </para>
 /// </summary>
 public class ProgressRing : View
 {
@@ -44,10 +56,10 @@ public class ProgressRing : View
     /// Identifies the <see cref="StrokeThickness"/> bindable property.
     /// </summary>
     public static readonly BindableProperty StrokeThicknessProperty =
-        BindableProperty.Create(nameof(StrokeThickness), typeof(double), typeof(ProgressRing), 4.0);
+        BindableProperty.Create(nameof(StrokeThickness), typeof(double), typeof(ProgressRing));
 
     /// <summary>
-    /// Gets or sets the width of the circular stroke.
+    /// Gets or sets the width of the circular stroke (Not supported on Windows).
     /// </summary>
     public double StrokeThickness
     {
@@ -59,7 +71,7 @@ public class ProgressRing : View
     /// Identifies the <see cref="TrackColor"/> bindable property.
     /// </summary>
     public static readonly BindableProperty TrackColorProperty =
-        BindableProperty.Create(nameof(TrackColor), typeof(Color), typeof(ProgressRing), Colors.Transparent);
+        BindableProperty.Create(nameof(TrackColor), typeof(Color), typeof(ProgressRing));
 
     /// <summary>
     /// Gets or sets the color of the background track of the progress ring.
@@ -74,7 +86,7 @@ public class ProgressRing : View
     /// Identifies the <see cref="ProgressColor"/> bindable property.
     /// </summary>
     public static readonly BindableProperty ProgressColorProperty =
-        BindableProperty.Create(nameof(ProgressColor), typeof(Color), typeof(ProgressRing), Colors.DodgerBlue);
+        BindableProperty.Create(nameof(ProgressColor), typeof(Color), typeof(ProgressRing));
 
     /// <summary>
     /// Gets or sets the color of the animated progress arc.

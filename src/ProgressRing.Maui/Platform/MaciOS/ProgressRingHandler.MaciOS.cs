@@ -1,146 +1,157 @@
+using System.Runtime.InteropServices;
 using CoreAnimation;
 using CoreGraphics;
+using Foundation;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 using UIKit;
-using Foundation;
-using System.Runtime.InteropServices;
 
 namespace ProgressRing.Maui.Platform.MaciOS;
 
 public partial class ProgressRingHandler : ViewHandler<ProgressRing, UIView>
 {
-    const double DefaultSize = 40;
-    const double DefaultStroke = 4;
+    private const double DefaultSize = 40;
+    private const double DefaultStroke = 4;
 
-    private CAShapeLayer _trackLayer;
-    private CAShapeLayer _progressLayer;
+    private CAShapeLayer? _trackLayer;
+    private CAShapeLayer? _progressLayer;
 
     public ProgressRingHandler() : base(Mapper, CommandMapper) { }
 
     public static IPropertyMapper<ProgressRing, ProgressRingHandler> Mapper =
         new PropertyMapper<ProgressRing, ProgressRingHandler>(ViewHandler.ViewMapper)
         {
-            [nameof(ProgressRing.Progress)] = MapProgress,
+            [nameof(ProgressRing.IsIndeterminate)] = MapIsIndeterminate,
+            [nameof(ProgressRing.StrokeThickness)] = MapStrokeThickness,
             [nameof(ProgressRing.ProgressColor)] = MapProgressColor,
             [nameof(ProgressRing.TrackColor)] = MapTrackColor,
-            [nameof(ProgressRing.StrokeThickness)] = MapStrokeThickness,
-            [nameof(ProgressRing.IsIndeterminate)] = MapIsIndeterminate,
+            [nameof(ProgressRing.HeightRequest)] = MapSize,
             [nameof(ProgressRing.WidthRequest)] = MapSize,
-            [nameof(ProgressRing.HeightRequest)] = MapSize
+            [nameof(ProgressRing.Progress)] = MapProgress,
         };
 
-    public static CommandMapper<ProgressRing, ProgressRingHandler> CommandMapper =
-        new(ViewHandler.ViewCommandMapper) { };
+    public static CommandMapper<ProgressRing, ProgressRingHandler> CommandMapper = new(ViewHandler.ViewCommandMapper) { };
 
     protected override UIView CreatePlatformView()
     {
-        var view = new UIView
+        _trackLayer = CreateLayer(UIColor.QuaternaryLabel.CGColor, DefaultStroke, 1.0);
+        _progressLayer = CreateLayer(UIColor.SystemBlue.CGColor, DefaultStroke, 0.0);
+
+        var container = new UIView
         {
+            ClipsToBounds = true,
             Frame = new CGRect(0, 0,
                 VirtualView?.WidthRequest > 0 ? VirtualView.WidthRequest : DefaultSize,
-                VirtualView?.HeightRequest > 0 ? VirtualView.HeightRequest : DefaultSize)
+                VirtualView?.HeightRequest > 0 ? VirtualView.HeightRequest : DefaultSize),
+            BackgroundColor = VirtualView?.BackgroundColor?.ToPlatform() ?? UIColor.Clear,
         };
 
-        _trackLayer = new CAShapeLayer
-        {
-            FillColor = UIColor.Clear.CGColor,
-            StrokeColor = UIColor.LightGray.CGColor,
-            LineCap = CAShapeLayer.CapRound,
-            LineWidth = (float)DefaultStroke,
-            AnchorPoint = new CGPoint(0.5, 0.5)
-        };
+        container.Layer.AddSublayer(_trackLayer);
+        container.Layer.AddSublayer(_progressLayer);
 
-        _progressLayer = new CAShapeLayer
-        {
-            FillColor = UIColor.Clear.CGColor,
-            StrokeColor = UIColor.SystemPink.CGColor,
-            LineCap = CAShapeLayer.CapRound,
-            LineWidth = (float)DefaultStroke,
-            StrokeEnd = 0,
-            AnchorPoint = new CGPoint(0.5, 0.5)
-        };
-
-        view.Layer.AddSublayer(_trackLayer);
-        view.Layer.AddSublayer(_progressLayer);
-
-        return view;
+        return container;
     }
 
     protected override void ConnectHandler(UIView platformView)
     {
         base.ConnectHandler(platformView);
 
-        if (VirtualView != null)
+        if (VirtualView is not null)
+        {
             VirtualView.SizeChanged += VirtualView_SizeChanged;
+        }
 
-        platformView.SetNeedsLayout();
-        platformView.LayoutIfNeeded();
-
-        UpdateLayers();
+        platformView.InvokeOnMainThread(() => SetSizeAndLayers());
     }
 
     protected override void DisconnectHandler(UIView platformView)
     {
         base.DisconnectHandler(platformView);
 
-        if (VirtualView != null)
+        if (VirtualView is not null)
+        {
             VirtualView.SizeChanged -= VirtualView_SizeChanged;
+        }
 
-        StopIndeterminateAnimation();
+        _progressLayer?.RemoveAnimation("rotationAnimation");
     }
 
-    private void VirtualView_SizeChanged(object sender, System.EventArgs e)
+    private void VirtualView_SizeChanged(object? sender, EventArgs e) => SetSizeAndLayers();
+
+    private CAShapeLayer CreateLayer(CGColor color, double stroke, double strokeEnd)
     {
-        UpdateLayers();
+        return new CAShapeLayer
+        {
+            FillColor = UIColor.Clear.CGColor,
+            StrokeColor = color,
+            LineWidth = (float)stroke,
+            StrokeEnd = (float)strokeEnd,
+            LineCap = CAShapeLayer.CapRound,
+            AnchorPoint = new CGPoint(0.5, 0.5)
+        };
     }
 
-    void UpdateLayers()
+    private void SetSizeAndLayers()
     {
         if (VirtualView is null || PlatformView is null) return;
 
-        var width = PlatformView.Bounds.Width > 0 ? PlatformView.Bounds.Width : (VirtualView.WidthRequest > 0 ? VirtualView.WidthRequest : DefaultSize);
-        var height = PlatformView.Bounds.Height > 0 ? PlatformView.Bounds.Height : (VirtualView.HeightRequest > 0 ? VirtualView.HeightRequest : DefaultSize);
+        var width = VirtualView.WidthRequest > 0 ? VirtualView.WidthRequest : PlatformView.Bounds.Width;
+        var height = VirtualView.HeightRequest > 0 ? VirtualView.HeightRequest : PlatformView.Bounds.Height;
 
-        if (width <= 0 || height <= 0) return;
+        if ((width <= 0 || height <= 0) && PlatformView.Superview is not null)
+        {
+            width = PlatformView.Superview.Bounds.Width;
+            height = PlatformView.Superview.Bounds.Height;
+        }
 
-        var layerFrame = new CGRect(0, 0, width, height);
-        _trackLayer.Frame = layerFrame;
-        _progressLayer.Frame = layerFrame;
+        if (width <= 0 || height <= 0)
+        {
+            width = height = DefaultSize;
+        }
 
-        var center = new CGPoint(layerFrame.Width / 2.0, layerFrame.Height / 2.0);
+        var size = Math.Max(width, height);
+
+        PlatformView.Bounds = new CGRect(0, 0, width, height);
+        PlatformView.Frame = new CGRect(0, 0, width, height);
+
         var stroke = VirtualView.StrokeThickness > 0 ? VirtualView.StrokeThickness : DefaultStroke;
-        var radius = Math.Max(0, Math.Min(layerFrame.Width, layerFrame.Height) / 2.0 - (stroke / 2.0));
-
+        var center = new CGPoint(width / 2.0, height / 2.0);
+        var radius = Math.Max(0, Math.Min(width, height) / 2.0 - stroke / 2.0);
         var startAngle = -Math.PI / 2.0;
         var endAngle = 3.0 * Math.PI / 2.0;
-
         var circlePath = UIBezierPath.FromArc(center, (NFloat)radius, (NFloat)startAngle, (NFloat)endAngle, true);
 
+        if (_trackLayer is null || _progressLayer is null) return;
+
+        _trackLayer.Frame = PlatformView.Bounds;
         _trackLayer.Path = circlePath.CGPath;
         _trackLayer.LineWidth = (float)stroke;
-        _trackLayer.StrokeColor = VirtualView.TrackColor?.ToPlatform()?.CGColor ?? UIColor.LightGray.CGColor;
+        _trackLayer.StrokeColor = VirtualView.TrackColor?.ToPlatform()?.CGColor ?? UIColor.QuaternaryLabel.CGColor;
 
+        _progressLayer.Frame = PlatformView.Bounds;
         _progressLayer.Path = circlePath.CGPath;
         _progressLayer.LineWidth = (float)stroke;
-        _progressLayer.StrokeColor = VirtualView.ProgressColor?.ToPlatform()?.CGColor ?? UIColor.SystemPink.CGColor;
+        _progressLayer.StrokeColor = VirtualView.ProgressColor?.ToPlatform()?.CGColor ?? UIColor.SystemBlue.CGColor;
 
         _progressLayer.RemoveAnimation("rotationAnimation");
 
         if (VirtualView.IsIndeterminate)
         {
-            SetProgress(0.25, animate: false);
+            SetProgress(0.25);
             StartIndeterminateAnimation();
         }
         else
         {
-            StopIndeterminateAnimation();
-            SetProgress(VirtualView.Progress, animate: false);
+            SetProgress(VirtualView.Progress);
         }
+
+        PlatformView.SetNeedsDisplay();
     }
 
-    void SetProgress(double progress, bool animate = true)
+    private void SetProgress(double progress, bool animate = true)
     {
+        if (_progressLayer is null) return;
+
         progress = Math.Max(0.0, Math.Min(1.0, progress));
 
         if (animate)
@@ -156,9 +167,9 @@ public partial class ProgressRingHandler : ViewHandler<ProgressRing, UIView>
         _progressLayer.StrokeEnd = (float)progress;
     }
 
-    void StartIndeterminateAnimation()
+    private void StartIndeterminateAnimation()
     {
-        if (_progressLayer.AnimationForKey("rotationAnimation") != null) return;
+        if (_progressLayer?.AnimationForKey("rotationAnimation") is not null) return;
 
         var rotation = CABasicAnimation.FromKeyPath("transform.rotation.z");
         rotation.From = NSNumber.FromDouble(0);
@@ -167,24 +178,13 @@ public partial class ProgressRingHandler : ViewHandler<ProgressRing, UIView>
         rotation.RepeatCount = float.MaxValue;
         rotation.RemovedOnCompletion = false;
 
-        _progressLayer.AddAnimation(rotation, "rotationAnimation");
+        _progressLayer?.AddAnimation(rotation, "rotationAnimation");
     }
 
-    void StopIndeterminateAnimation()
-    {
-        _progressLayer.RemoveAnimation("rotationAnimation");
-    }
-
-    public static void MapProgress(ProgressRingHandler handler, ProgressRing view)
-    {
-        if (handler == null || view == null) return;
-        if (!view.IsIndeterminate)
-            handler.SetProgress(view.Progress, animate: true);
-    }
-
-    public static void MapProgressColor(ProgressRingHandler handler, ProgressRing view) => handler?.UpdateLayers();
-    public static void MapTrackColor(ProgressRingHandler handler, ProgressRing view) => handler?.UpdateLayers();
-    public static void MapStrokeThickness(ProgressRingHandler handler, ProgressRing view) => handler?.UpdateLayers();
-    public static void MapIsIndeterminate(ProgressRingHandler handler, ProgressRing view) => handler?.UpdateLayers();
-    public static void MapSize(ProgressRingHandler handler, ProgressRing view) => handler?.UpdateLayers();
+    public static void MapIsIndeterminate(ProgressRingHandler handler, ProgressRing view) => handler?.SetSizeAndLayers();
+    public static void MapStrokeThickness(ProgressRingHandler handler, ProgressRing view) => handler?.SetSizeAndLayers();
+    public static void MapProgressColor(ProgressRingHandler handler, ProgressRing view) => handler?.SetSizeAndLayers();
+    public static void MapTrackColor(ProgressRingHandler handler, ProgressRing view) => handler?.SetSizeAndLayers();
+    public static void MapSize(ProgressRingHandler handler, ProgressRing view) => handler?.SetSizeAndLayers();
+    public static void MapProgress(ProgressRingHandler handler, ProgressRing view) => handler?.SetProgress(view.Progress);
 }

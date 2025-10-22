@@ -19,7 +19,7 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 
-    	<Version>1.1.1</Version>
+    	<Version>1.1.2</Version>
 		<Company>MHRastegari</Company>
 		<PackageId>ProgressRing.Maui</PackageId>
 		<Owners>Mohammad Hossein Rastegarinia</Owners>

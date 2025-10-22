@@ -10,7 +10,7 @@
         HorizontalOptions="CenterAndExpand"
         Spacing="40">
         <StackLayout HorizontalOptions="Center" Spacing="12">
-            <Label Text="Determinate ProgressRing" />
+            <Label HorizontalOptions="Center" Text="Determinate ProgressRing" />
             <mhr:ProgressRing HorizontalOptions="Center" Progress="0.6" />
         </StackLayout>
 

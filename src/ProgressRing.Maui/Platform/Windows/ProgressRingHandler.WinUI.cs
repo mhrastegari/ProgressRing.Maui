@@ -28,10 +28,8 @@ public partial class ProgressRingHandler : ViewHandler<ProgressRing, WinUIViewbo
     {
         return new WinUIViewbox
         {
-            Child = _progressRing = new WinUIProgressRing
-            {
-                IsActive = true,
-            }
+            Child = _progressRing = new WinUIProgressRing { IsActive = true },
+            Stretch = Microsoft.UI.Xaml.Media.Stretch.None
         };
     }
 

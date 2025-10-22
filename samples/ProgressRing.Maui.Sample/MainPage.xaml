@@ -9,41 +9,48 @@
         Padding="0,20"
         HorizontalOptions="CenterAndExpand"
         Spacing="40">
-        <StackLayout Spacing="12">
-            <Label HorizontalOptions="Center" Text="Determinate ProgressRing" />
+        <StackLayout HorizontalOptions="Center" Spacing="12">
+            <Label Text="Determinate ProgressRing" />
+            <mhr:ProgressRing HorizontalOptions="Center" Progress="0.6" />
+        </StackLayout>
+
+        <StackLayout HorizontalOptions="Center" Spacing="12">
+            <Label HorizontalOptions="Center" Text="Indeterminate ProgressRing" />
+            <mhr:ProgressRing HorizontalOptions="Center" IsIndeterminate="True" />
+        </StackLayout>
+
+        <StackLayout
+            HorizontalOptions="Center"
+            Spacing="16"
+            WidthRequest="260">
+            <Label HorizontalOptions="Center" Text="Advanced ProgressRing" />
 
             <mhr:ProgressRing
                 x:Name="DeterminateRing"
                 HeightRequest="85"
-                IsIndeterminate="False"
                 Progress="0.6"
                 ProgressColor="{AppThemeBinding Light={StaticResource Primary},
                                                 Dark={StaticResource White}}"
-                StrokeThickness="6"
+                StrokeThickness="8"
                 TrackColor="{AppThemeBinding Light={StaticResource Gray200},
                                              Dark={StaticResource Gray600}}"
                 WidthRequest="85" />
 
-            <Slider
-                x:Name="ProgressSlider"
-                Maximum="1"
-                Minimum="0"
-                ValueChanged="ProgressSlider_ValueChanged"
-                Value="0.6" />
-        </StackLayout>
+            <Button
+                Clicked="ToggleIndeterminate_Clicked"
+                HorizontalOptions="Center"
+                Text="Toggle Indeterminate" />
 
-        <StackLayout Spacing="12">
-            <Label HorizontalOptions="Center" Text="Indeterminate ProgressRing" />
-
-            <mhr:ProgressRing
-                HeightRequest="85"
-                IsIndeterminate="True"
-                ProgressColor="{AppThemeBinding Light={StaticResource Primary},
-                                                Dark={StaticResource White}}"
-                StrokeThickness="6"
-                TrackColor="{AppThemeBinding Light={StaticResource Gray200},
-                                             Dark={StaticResource Gray600}}"
-                WidthRequest="85" />
+            <Slider Value="{Binding Source={x:Reference DeterminateRing}, Path=Progress, Mode=TwoWay}">
+                <Slider.Triggers>
+                    <DataTrigger
+                        Binding="{Binding Source={x:Reference DeterminateRing}, Path=IsIndeterminate}"
+                        TargetType="Slider"
+                        Value="True">
+                        <Setter Property="IsEnabled" Value="False" />
+                    </DataTrigger>
+                </Slider.Triggers>
+            </Slider>
         </StackLayout>
     </StackLayout>
 </ContentPage>

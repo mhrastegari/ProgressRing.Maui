@@ -7,9 +7,8 @@ public partial class MainPage : ContentPage
 		InitializeComponent();
 	}
 
-	private void ProgressSlider_ValueChanged(object sender, ValueChangedEventArgs e)
+	private void ToggleIndeterminate_Clicked(object sender, EventArgs e)
 	{
-		if (DeterminateRing is null) return;
-		DeterminateRing.Progress = e.NewValue;
+		DeterminateRing.IsIndeterminate = !DeterminateRing.IsIndeterminate;
 	}
 }

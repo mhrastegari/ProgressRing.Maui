@@ -33,7 +33,6 @@ public partial class ProgressRingHandler : ViewHandler<ProgressRing, FrameLayout
             Max = 1000,
         };
 
-
         var container = new FrameLayout(Context);
         container.AddView(_indicator);
         return container;
@@ -87,9 +86,13 @@ public partial class ProgressRingHandler : ViewHandler<ProgressRing, FrameLayout
         var progress = (int)(view.Progress * handler._indicator.Max);
 
         if (OperatingSystem.IsAndroidVersionAtLeast(24))
+        {
             handler._indicator.SetProgress(progress, true);
+        }
         else
+        {
             handler._indicator.Progress = progress;
+        }
     }
 
     public static void MapSize(ProgressRingHandler handler, ProgressRing view)

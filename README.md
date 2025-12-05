@@ -3,6 +3,8 @@
 A cross-platform native .NET MAUI ProgressRing (Circular Progress) control for Android, iOS, macOS, and Windows.\
 Supports determinate and indeterminate modes with customizable colors and stroke thickness.
 
+https://github.com/user-attachments/assets/fc670265-70dd-422d-a544-16e8b9e4d3d7
+
 ## ✨ Features
 
 - ✅ Determinate and indeterminate modes
